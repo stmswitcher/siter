@@ -28,38 +28,38 @@ def ask_sitename():
 
 # Creating directory based on a given sitename and placing basic index.php file in it
 def create_site_dir():
-    print bgcolors.BLUE + 'Creating a directory ' + sitename + '.dev under ' + wwwdir + bgcolors.ENDC
-    os.makedirs(wwwdir + sitename + '.dev')
-    inx = open(wwwdir + sitename + '.dev/index.php', 'w')
+    print bgcolors.BLUE + 'Creating a directory ' + sitename + '.local under ' + wwwdir + bgcolors.ENDC
+    os.makedirs(wwwdir + sitename + '.local')
+    inx = open(wwwdir + sitename + '.local/index.php', 'w')
     inx.write('Hello')
     inx.close()
     print bgcolors.GREEN + 'Done' + bgcolors.ENDC
 
 # Give specified user access to a newely created folder and its conents
 def set_user_rights():
-    print bgcolors.BLUE + 'Giving ' + username + ' permissions for ' + wwwdir + sitename + '.dev' + bgcolors.ENDC
+    print bgcolors.BLUE + 'Giving ' + username + ' permissions for ' + wwwdir + sitename + '.local' + bgcolors.ENDC
     uid = pwd.getpwnam(username).pw_uid
     gid = grp.getgrnam(username).gr_gid
-    os.chown(wwwdir + sitename + '.dev', uid, gid)
-    os.chown(wwwdir + sitename + '.dev/index.php', uid, gid)
+    os.chown(wwwdir + sitename + '.local', uid, gid)
+    os.chown(wwwdir + sitename + '.local/index.php', uid, gid)
     print bgcolors.GREEN + 'Done' + bgcolors.ENDC
 
 # Create and write apache config file
 def create_site_config():
     text = [
     '<VirtualHost *:80>',
-    'ServerName ' + sitename + '.dev',
-    'ServerAlias www.' + sitename + '.dev',
-    'DocumentRoot ' + wwwdir + sitename + '.dev',
+    'ServerName ' + sitename + '.local',
+    'ServerAlias www.' + sitename + '.local',
+    'DocumentRoot ' + wwwdir + sitename + '.local',
     'SetEnv APPLICATION_ENV "dev"',
-    '<Directory ' + wwwdir + sitename + '.dev/>',
+    '<Directory ' + wwwdir + sitename + '.local/>',
     'AllowOverride All',
     'Require all granted',
     '</Directory>',
     '</VirtualHost>']
 
     print bgcolors.BLUE + 'Writing apache conf file' + bgcolors.ENDC
-    conf = open("/etc/apache2/sites-available/" + sitename + ".dev.conf", 'w')
+    conf = open("/etc/apache2/sites-available/" + sitename + ".local.conf", 'w')
 
     for index in text:
             conf.write(index + '\n')
@@ -72,16 +72,16 @@ def update_hosts():
     print bgcolors.BLUE + 'Updating hosts file' + bgcolors.ENDC
     hosts = open("/etc/hosts", 'a')
     hosts.write('\n\n' + sitename.capitalize() + '\n')
-    hosts.write("127.0.0.1 " + sitename + ".dev www." + sitename + ".dev" + '\n')
+    hosts.write("127.0.0.1 " + sitename + ".local www." + sitename + ".local" + '\n')
     hosts.close()
     print bgcolors.GREEN + 'Done' + bgcolors.ENDC
 
 # Enable new virtual host and restart apache
 def turn_on():
-    print "Enabling " + sitename + ".dev and restarting service"
+    print "Enabling " + sitename + ".local and restarting service"
 
     with open(os.devnull, "w") as f:
-        call(["a2ensite", sitename + '.dev'], stdout=f)
+        call(["a2ensite", sitename + '.local'], stdout=f)
 
     call(["service", "apache2", "restart"])
 
